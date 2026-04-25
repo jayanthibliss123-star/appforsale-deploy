@@ -12,6 +12,8 @@ import AboutScreen from '../screens/AboutScreen';
 import ContactScreen from '../screens/ContactScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SignInScreen from '../screens/SignInScreen';
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import UploadAppScreen from '../screens/UploadAppScreen';
@@ -57,6 +59,15 @@ export default function AppNavigator() {
                 animationDuration: 360,
               }}
             />
+            <Stack.Screen
+              name="ForgotPassword"
+              component={ForgotPasswordScreen}
+              options={{
+                animation: 'ios_from_right',
+                animationDuration: 300,
+              }}
+            />
+            <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
             <Stack.Screen
               name="Home"
               component={HomeScreen}
