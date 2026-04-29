@@ -1437,7 +1437,7 @@ export default function SignUpScreen({ navigation }) {
                     ]}
                   >
                     <LinearGradient
-                      colors={['#FF7AD9', '#E95CFF', '#B84DFF']}
+                      colors={['#4DEBFF', '#4DEBFF', '#4DEBFF']}
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 0 }}
                       style={styles.primaryButton}

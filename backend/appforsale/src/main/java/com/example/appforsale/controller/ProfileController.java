@@ -1,6 +1,5 @@
 package com.example.appforsale.controller;
 
-import com.example.appforsale.dto.UserDto;
 import com.example.appforsale.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
