@@ -1,8 +1,4 @@
 package com.example.appforsale.controller;
-
-
-
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

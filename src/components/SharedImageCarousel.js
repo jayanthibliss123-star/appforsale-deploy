@@ -1,5 +1,4 @@
-// components/SharedImageCarousel.js
-// Shared carousel component — used in AppsScreen, AdminHomeScreen, HomeScreen
+
 
 import React, { useState, useRef } from 'react';
 import {
@@ -8,15 +7,6 @@ import {
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-/**
- * SharedImageCarousel
- *
- * Props:
- *   images      — string[]   — array of image URIs
- *   width       — number     — carousel width (defaults to SCREEN_WIDTH - 36)
- *   height      — number     — carousel height (default 176)
- *   borderRadius— number     — (default 0, card handles it)
- */
 export default function SharedImageCarousel({
   images,
   width,

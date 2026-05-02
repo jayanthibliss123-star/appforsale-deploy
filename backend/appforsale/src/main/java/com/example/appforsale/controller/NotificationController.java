@@ -1,42 +1,6 @@
+
+
 package com.example.appforsale.controller;
-
-// import com.example.appforsale.dto.NotificationDto;
-// import com.example.appforsale.service.NotificationService;
-// import lombok.RequiredArgsConstructor;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.*;
-
-// import java.util.List;
-// import java.util.Map;
-
-// @RestController
-// @RequestMapping("/api/notifications")
-// @RequiredArgsConstructor
-// @CrossOrigin(origins = "*")
-// public class NotificationController {
-
-//     private final NotificationService notificationService;
-
-//     // Get notifications by role: USER or ADMIN
-//     @GetMapping("/{role}")
-//     public ResponseEntity<List<NotificationDto>> getNotifications(@PathVariable String role) {
-//         return ResponseEntity.ok(notificationService.getNotificationsByRole(role));
-//     }
-
-//     // Get unread count
-//     @GetMapping("/{role}/unread-count")
-//     public ResponseEntity<Map<String, Long>> getUnreadCount(@PathVariable String role) {
-//         long count = notificationService.getUnreadCount(role);
-//         return ResponseEntity.ok(Map.of("count", count));
-//     }
-
-//     // Mark all read
-//     @PutMapping("/{role}/mark-read")
-//     public ResponseEntity<Map<String, String>> markAllRead(@PathVariable String role) {
-//         notificationService.markAllRead(role);
-//         return ResponseEntity.ok(Map.of("message", "All notifications marked as read"));
-//     }
-// }
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -55,64 +19,73 @@ public class NotificationController {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    // ── ADMIN: get all admin notifications ────────────────────────────
+    // ── ADMIN: SUBMISSION notifications మాత్రమే ───────────────────────
     @GetMapping("/ADMIN")
     public ResponseEntity<List<Notification>> getAdminNotifications() {
-        List<Notification> list = notificationRepository.findByRoleOrderByCreatedAtDesc("ADMIN");
+        List<Notification> list = notificationRepository
+            .findByRoleAndTypeOrderByCreatedAtDesc("ADMIN", "SUBMISSION");
         return ResponseEntity.ok(list);
     }
 
-    // ── ADMIN: unread count (for bell badge) ──────────────────────────
+    // ── ADMIN: unread count — SUBMISSION only ─────────────────────────
     @GetMapping("/ADMIN/unread-count")
     public ResponseEntity<Map<String, Long>> getAdminUnreadCount() {
-        long count = notificationRepository.countByRoleAndIsRead("ADMIN", false);
+        long count = notificationRepository
+            .countByRoleAndTypeAndIsRead("ADMIN", "SUBMISSION", false);
         return ResponseEntity.ok(Map.of("count", count));
     }
 
-    // ── ADMIN: mark all as read ───────────────────────────────────────
+    // ── ADMIN: mark SUBMISSION notifications as read ──────────────────
     @PutMapping("/ADMIN/mark-read")
     public ResponseEntity<?> markAdminRead() {
-        notificationRepository.markAllReadByRole("ADMIN");
-        return ResponseEntity.ok(Map.of("message", "Marked all admin notifications as read"));
+        notificationRepository.markAllReadByRoleAndType("ADMIN", "SUBMISSION");
+        return ResponseEntity.ok(Map.of("message", "Marked read"));
     }
 
-    // ── USER: get notifications for a specific user email ─────────────
-    // Called with: GET /api/notifications/USER?email=owner@gmail.com
+    // ── USER: APPROVED/REJECTED only, filtered by email ──────────────
     @GetMapping("/USER")
     public ResponseEntity<List<Notification>> getUserNotifications(
             @RequestParam(required = false) String email) {
         List<Notification> list;
         if (email != null && !email.isEmpty()) {
             list = notificationRepository
-                .findByRoleAndTargetEmailOrderByCreatedAtDesc("USER", email);
+                .findByRoleAndTargetEmailAndTypeInOrderByCreatedAtDesc(
+                    "USER", email, List.of("APPROVED", "REJECTED"));
         } else {
-            list = notificationRepository.findByRoleOrderByCreatedAtDesc("USER");
+            list = notificationRepository
+                .findByRoleAndTypeInOrderByCreatedAtDesc(
+                    "USER", List.of("APPROVED", "REJECTED"));
         }
         return ResponseEntity.ok(list);
     }
 
-    // ── USER: unread count for specific email ────────────────────────
+    // ── USER: unread count — APPROVED/REJECTED only, by email ─────────
     @GetMapping("/USER/unread-count")
     public ResponseEntity<Map<String, Long>> getUserUnreadCount(
             @RequestParam(required = false) String email) {
         long count;
         if (email != null && !email.isEmpty()) {
             count = notificationRepository
-                .countByRoleAndTargetEmailAndIsRead("USER", email, false);
+                .countByRoleAndTargetEmailAndTypeInAndIsRead(
+                    "USER", email, List.of("APPROVED", "REJECTED"), false);
         } else {
-            count = notificationRepository.countByRoleAndIsRead("USER", false);
+            count = notificationRepository
+                .countByRoleAndTypeInAndIsRead(
+                    "USER", List.of("APPROVED", "REJECTED"), false);
         }
         return ResponseEntity.ok(Map.of("count", count));
     }
 
-    // ── USER: mark all read for specific email ───────────────────────
+    // ── USER: mark read — APPROVED/REJECTED only, by email ────────────
     @PutMapping("/USER/mark-read")
     public ResponseEntity<?> markUserRead(
             @RequestParam(required = false) String email) {
         if (email != null && !email.isEmpty()) {
-            notificationRepository.markAllReadByRoleAndEmail("USER", email);
+            notificationRepository.markReadByRoleAndTargetEmailAndTypeIn(
+                "USER", email, List.of("APPROVED", "REJECTED"));
         } else {
-            notificationRepository.markAllReadByRole("USER");
+            notificationRepository.markAllReadByRoleAndTypeIn(
+                "USER", List.of("APPROVED", "REJECTED"));
         }
         return ResponseEntity.ok(Map.of("message", "Marked read"));
     }
