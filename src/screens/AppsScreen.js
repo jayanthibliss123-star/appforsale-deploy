@@ -454,16 +454,7 @@ export default function AppsScreen({ navigation, route }) {
                   animatedStyle={getCardStyle(index)}
                 />
               ))}
-            </ScrollView>
-
-            <View style={styles.paginationRow}>
-              {filteredApps.map((_, index) => (
-                <View
-                  key={index}
-                  style={[styles.paginationDot, index === activeIndex && styles.paginationDotActive]}
-                />
-              ))}
-            </View>
+            </ScrollView>          
           </>
         ) : (
           <Animated.View style={[styles.emptyState, fadeUp(emptyAnim, 14)]}>
@@ -612,10 +603,6 @@ const styles = StyleSheet.create({
   metaValue:       { color: COLORS.textPrimary, fontSize: 13, fontWeight: '700' },
   viewButton:      { minWidth: 108, minHeight: 40, borderRadius: 12, paddingHorizontal: 14, alignItems: 'center', justifyContent: 'center' },
   viewButtonText:  { color: '#12343A', fontSize: 12, fontWeight: '700' },
-
-  paginationRow:       { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 14, marginBottom: 24 },
-  paginationDot:       { width: 8, height: 8, borderRadius: 99, backgroundColor: 'rgba(255,255,255,0.18)' },
-  paginationDotActive: { width: 20, backgroundColor: '#67E6E8' },
 
   emptyState:            { borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)', backgroundColor: 'rgba(255,255,255,0.03)', padding: 18, alignItems: 'center', marginBottom: 20 },
   emptyIcon:             { color: '#67E6E8', fontSize: 28, marginBottom: 8 },

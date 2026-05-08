@@ -925,9 +925,12 @@ import {
   Animated, Alert, ScrollView, ActivityIndicator,
 } from 'react-native';
 import { LinearGradient }       from 'expo-linear-gradient';
-import { saveAdminCredentials } from '../utils/adminStorage';
+import { saveAdminCredentials, markAdminSetupDone } from '../utils/adminStorage';
 import { setupAdminApi }        from '../utils/apiService';
 import { showAlert } from '../components/CrossPlatformAlert';
+import useCustomAlert from '../utils/useCustomAlert';
+import CustomAlertModal from '../components/CustomAlertModal';
+
 export default function AdminSetupScreen({ navigation }) {
   const [adminEmail,    setAdminEmail]    = useState('');
   const [adminPassword, setAdminPassword] = useState('');
@@ -944,6 +947,7 @@ export default function AdminSetupScreen({ navigation }) {
   const buttonGlow = useRef(new Animated.Value(0.92)).current;
   const shineMove  = useRef(new Animated.Value(-220)).current;
   const cardBreath = useRef(new Animated.Value(0.985)).current;
+   const { alertConfig, showAlert, hideAlert } = useCustomAlert();
 
   useEffect(() => {
     Animated.parallel([
@@ -1018,7 +1022,7 @@ export default function AdminSetupScreen({ navigation }) {
         password:    adminPassword.trim(),
         companyName: companyName.trim(),
       });
-
+    await markAdminSetupDone();
       setLoading(false);
 
       const savedEmail = adminEmail.trim().toLowerCase();
@@ -1045,6 +1049,7 @@ export default function AdminSetupScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="#141B27" />
+       <CustomAlertModal config={alertConfig} onHide={hideAlert} />
       <LinearGradient colors={['#141B27', '#212C3D', '#182130']} style={styles.container}>
         <KeyboardAvoidingView
           style={styles.keyboardWrap}

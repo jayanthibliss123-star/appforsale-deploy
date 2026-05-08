@@ -308,6 +308,62 @@
 // }
 // }
 
+// package com.example.appforsale.controller;
+
+// import org.springframework.beans.factory.annotation.Autowired;
+// import com.example.appforsale.entity.Admin;
+// import org.springframework.http.ResponseEntity;
+// import org.springframework.web.bind.annotation.*;
+
+// import com.example.appforsale.dto.AdminDto;
+// import com.example.appforsale.service.AdminService;
+
+// import java.util.HashMap;
+// import java.util.Map;
+
+// @RestController
+// @RequestMapping("/api/admin")
+// @CrossOrigin("*")
+// public class AdminController {
+
+//     @Autowired
+//     private AdminService adminService;
+
+//     @GetMapping("/count")
+//     public ResponseEntity<Long> getAdminCount() {
+//         return ResponseEntity.ok(adminService.getAdminCount());
+//     }
+
+//     @PostMapping("/setup")
+//     public ResponseEntity<Map<String, Object>> setupAdmin(
+//             @RequestBody AdminDto dto) {
+
+//         Map<String, Object> response = new HashMap<>();
+
+//         // Check email already exists
+//         boolean exists = adminService.adminExistsByEmail(dto.getEmail());
+
+//         if (exists) {
+//             response.put("message", "Admin already exists");
+//             response.put("alreadyExists", true);
+//             response.put("success", true);
+
+//             return ResponseEntity.ok(response);
+//         }
+
+//         // Create admin
+//         Admin saved = adminService.createAdmin(dto);
+
+//         response.put("message", "Admin created successfully");
+//         response.put("alreadyExists", false);
+//         response.put("success", true);
+//         response.put("adminId", saved.getId());
+
+//         return ResponseEntity.ok(response);
+//     }
+// }
+
+
 package com.example.appforsale.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -335,30 +391,59 @@ public class AdminController {
     }
 
     @PostMapping("/setup")
-    public ResponseEntity<Map<String, Object>> setupAdmin(
-            @RequestBody AdminDto dto) {
-
+    public ResponseEntity<Map<String, Object>> setupAdmin(@RequestBody AdminDto dto) {
         Map<String, Object> response = new HashMap<>();
-
-        // Check email already exists
         boolean exists = adminService.adminExistsByEmail(dto.getEmail());
-
         if (exists) {
             response.put("message", "Admin already exists");
             response.put("alreadyExists", true);
             response.put("success", true);
-
             return ResponseEntity.ok(response);
         }
-
-        // Create admin
         Admin saved = adminService.createAdmin(dto);
-
         response.put("message", "Admin created successfully");
         response.put("alreadyExists", false);
         response.put("success", true);
         response.put("adminId", saved.getId());
+        return ResponseEntity.ok(response);
+    }
 
+    @PutMapping("/update")
+    public ResponseEntity<Map<String, Object>> updateAdmin(@RequestBody AdminDto dto) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Debug: ఏమి వస్తోందో చూడటానికి (optional, production లో తీసేయవచ్చు)
+            System.out.println("Update request → oldEmail=" + dto.getOldEmail()
+                    + " newEmail=" + dto.getEmail()
+                    + " company=" + dto.getCompanyName());
+
+            Admin updated = adminService.updateAdmin(dto);
+            response.put("message", "Admin updated successfully");
+            response.put("success", true);
+            response.put("adminId", updated.getId());
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            System.err.println("Update failed: " + e.getMessage());
+            response.put("message", e.getMessage());
+            response.put("success", false);
+            return ResponseEntity.status(404).body(response);
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> loginAdmin(@RequestBody AdminDto dto) {
+        Map<String, Object> response = new HashMap<>();
+        Admin admin = adminService.findByEmail(dto.getEmail());
+        if (admin == null || !admin.getPassword().equals(dto.getPassword())) {
+            response.put("message", "Invalid email or password");
+            response.put("success", false);
+            return ResponseEntity.status(401).body(response);
+        }
+        response.put("message", "Login successful");
+        response.put("success", true);
+        response.put("email", admin.getEmail());
+        response.put("companyName", admin.getCompanyName());
+        response.put("role", admin.getRole());
         return ResponseEntity.ok(response);
     }
 }
