@@ -1347,7 +1347,7 @@
 // }
 
 
-const BASE_URL = 'http://13.235.206.54:8080/api';
+const BASE_URL = 'http://65.1.250.114:8080/api';
 
 const headers = {
   'Content-Type': 'application/json',
@@ -1438,8 +1438,7 @@ export async function getProfileApi(userId) {
     if (!response.ok) throw new Error(data.message || 'Failed to get profile');
     return data;
   } catch (error) {
-    if (error.message === 'Network request failed')
-      throw new Error('Cannot connect to server.');
+    console.error(error);
     throw error;
   }
 }
